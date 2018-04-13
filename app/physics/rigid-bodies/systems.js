@@ -1,8 +1,10 @@
 import _ from "lodash";
-import { Box } from "./renderers";
+import { Box, Circle } from "./renderers";
 import Matter from "matter-js";
 
 let boxIds = 0;
+
+var isBox = true;
 
 const distance = ([x1, y1], [x2, y2]) =>
 	Math.sqrt(Math.abs(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)));
@@ -20,21 +22,32 @@ const CreateBox = (state, { touches, screen }) => {
 	let boxSize = Math.trunc(Math.max(screen.width, screen.height) * 0.075);
 
 	touches.filter(t => t.type === "press").forEach(t => {
-		let body = Matter.Bodies.rectangle(
+		let body = isBox ?Matter.Bodies.rectangle(
 			t.event.pageX,
 			t.event.pageY,
 			boxSize,
 			boxSize,
-			{ frictionAir: 0.021 }
+			{ frictionAir: 0.021, restitution:1 }
+		): Matter.Bodies.circle(
+			t.event.pageX,
+			t.event.pageY,
+			boxSize/2,
+			{ frictionAir: 0.021, restitution:1 }
 		);
 		Matter.World.add(world, [body]);
 
-		state[++boxIds] = {
+		state[++boxIds] = isBox?{
 			body: body,
 			size: [boxSize, boxSize],
 			color: boxIds % 2 == 0 ? "pink" : "#B8E986",
 			renderer: Box
+		}:{
+			body: body,
+			radius: boxSize,
+			color: boxIds % 2 == 0 ? "pink" : "#B8E986",
+			renderer: Circle
 		};
+		isBox = !isBox;
 	});
 
 	return state;
@@ -53,7 +66,7 @@ const MoveBox = (state, { touches }) => {
 			let body = state[key].body;
 
 			return (
-				body &&
+				body && body.position &&
 				distance([body.position.x, body.position.y], startPos) < 25
 			);
 		});
@@ -89,7 +102,7 @@ const CleanBoxes = (state, { touches, screen }) => {
 	let world = state["physics"].world;
 
 	Object.keys(state)
-		.filter(key => state[key].body && state[key].body.position.y > screen.height * 2)
+		.filter(key => state[key].body && state[key].body.position && state[key].body.position.y > screen.height * 2)
 		.forEach(key => {
 			Matter.Composite.remove(world, state[key].body);
 			delete state[key];
