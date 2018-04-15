@@ -49,19 +49,19 @@ export default class RigidBodies extends Component {
                 restitution: 1
             }
         );
-
-        // const test = Matter.Composites.softBody(200, 200, 12, 10, 2, 2, false, 4, {
-        //     friction: 0.00001, // 摩擦力
-        //     collisionFilter: {
-        //         group: Matter.Body.nextGroup(true)
-        //     },
-        //     render: {
-        //         visible: false,
-        //     }
-        // })
-        // for (var i = 0; i < 20; i++) {
-        //     test.bodies[i].isStatic = true;
-        // }
+        
+        const test = Matter.Composites.softBody(200, 200, 6, 4, 2, 2, false, 4, {
+            friction: 0.00001, // 摩擦力
+            collisionFilter: {
+                group: Matter.Body.nextGroup(true)
+            },
+            render: {
+                visible: false,
+            }
+        })
+        for (var i = 0; i < 20; i++) {
+            test.bodies[i].isStatic = true;
+        }
 
         const constraint = Matter.Constraint.create({
             label: "Drag Constraint",
@@ -72,7 +72,7 @@ export default class RigidBodies extends Component {
             angularStiffness: 1
         });
 
-        Matter.World.add(world, [body, floor, leftWall, rightWall]);
+        Matter.World.add(world, [body, floor, leftWall, rightWall, test]);
         Matter.World.addConstraint(world, constraint);
 
         return (
@@ -107,8 +107,8 @@ export default class RigidBodies extends Component {
                         size: [2, height],
                         color: "#86E9BE",
                         renderer: Box
-                    }
-                    // test: {body: test, size: [100, 100], color: "#86E9BE", renderer: Cloth}
+                    },
+                    test: {body: test, size: [100, 100], color: "#86E9BE", renderer: Cloth}
                 }}
             >
                 <StatusBar hidden={true} />

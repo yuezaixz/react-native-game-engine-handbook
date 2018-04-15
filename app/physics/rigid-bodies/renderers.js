@@ -1,7 +1,6 @@
-import React, {Component, PureComponent} from "react";
-import {StyleSheet, View, ART, Dimensions} from "react-native";
+import React, {Component} from "react";
+import {View} from "react-native";
 import Svg, {Path, Rect} from "react-native-svg";
-import {Vector} from "matter-js";
 
 class Box extends Component {
     constructor(props) {
@@ -70,18 +69,18 @@ class Cloth extends Component {
 
     getBoxs(){
         return this.props.body.bodies.map((item, index)=>{
-            const x = item.position.x - 4 / 2;
-            const y = item.position.y - 4 / 2;
+            const x = item.position.x - 10 / 2;
+            const y = item.position.y - 10 / 2;
             return (
                 <View key={"cloth"+index} style={
                     {
                         position: "absolute",
                         left: x,
                         top: y,
-                        width: 4,
-                        height: 4,
-                        borderRadius: 4 / 2,
-                        backgroundColor: "pink"
+                        width: 10,
+                        height: 10,
+                        borderWidth: 1,
+                        borderColor: "pink"
                     }
                 } />
             )
